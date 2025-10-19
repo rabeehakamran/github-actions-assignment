@@ -1,0 +1,44 @@
+name: Continuous Integration
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Checkout the repo
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # Step 2: Set up Node.js
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      # Step 3: Install dependencies
+      - name: Install dependencies
+        run: npm install
+
+      # Step 4: Run linting (optional – only if you have eslint)
+      - name: Run linter
+        run: |
+          npx eslint . || echo "Lint warnings found, but continuing..."
+
+      # Step 5: Run tests
+      - name: Run tests
+        run: |
+          if [ -d "__tests__" ] || [ -d "tests" ]; then
+            npm test
+          else
+            echo "No test folder found. Skipping tests."
+          fi
+
+      # Step 6: Report success
+      - name: CI Complete
+        run: echo "CI completed successfully!"
