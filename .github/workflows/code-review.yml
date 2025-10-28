@@ -1,0 +1,57 @@
+name: Code Review & Security Check
+
+on:
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  lint-and-audit:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run ESLint
+        run: |
+          if [ -f "./.eslintrc.json" ]; then
+            npx eslint . --ext .js || exit 1
+          else
+            echo "ESLint config not found — skipping lint check."
+          fi
+
+      - name: Check for vulnerabilities
+        run: npm audit --audit-level=moderate
+
+  codeql-analysis:
+    name: 🔍 CodeQL Security Scan
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+
+    strategy:
+      fail-fast: false
+      matrix:
+        language: [ 'javascript' ]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: ${{ matrix.language }}
+
+      - name: Perform CodeQL Scan
+        uses: github/codeql-action/analyze@v3
