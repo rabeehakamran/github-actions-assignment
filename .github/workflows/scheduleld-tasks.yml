@@ -1,4 +1,4 @@
-name: 🕒 Weekly Maintenance Workflow
+name: Weekly Maintenance Workflow
 
 on:
   schedule:
@@ -6,47 +6,50 @@ on:
     - cron: "0 7 * * 0"
   workflow_dispatch:  # Allow manual trigger
 
+permissions:
+  contents: write
+
 jobs:
   maintenance:
     runs-on: ubuntu-latest
     steps:
-      - name: 🧭 Checkout repository
+      - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: ⚙️ Set up Node.js
+      - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '18'
 
-      - name: 📝 Generate maintenance log
+      - name: Generate maintenance log
         run: |
           mkdir -p logs
           echo "🕒 Weekly Maintenance Started at $(date)" > logs/maintenance_log.txt
           echo "✅ Checking repository health..." >> logs/maintenance_log.txt
 
-      - name: 🧹 Simulate cleanup task
+      - name: Simulate cleanup task
         run: |
           mkdir -p temp
           echo "Cleaning up temporary files..." > temp/cleanup.log
           sleep 2
           echo "All temporary files removed successfully!" >> logs/maintenance_log.txt
 
-      - name: 📦 Check for outdated npm dependencies
+      - name: Check for outdated npm dependencies
         run: |
           echo "🔍 Checking for outdated dependencies..." >> logs/maintenance_log.txt
           npm install > /dev/null 2>&1
           npm outdated || echo "All dependencies are up-to-date!" >> logs/maintenance_log.txt
 
-      - name: 💾 Create backup of logs
+      - name: Create backup of logs
         run: |
           mkdir -p backups
           cp logs/maintenance_log.txt backups/backup_$(date +'%Y%m%d_%H%M').txt
           echo "🗂 Backup created successfully!" >> logs/maintenance_log.txt
 
-      - name: 🚀 Commit and push maintenance results
+      - name: Commit and push maintenance results
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add logs backups
-          git commit -m "🕒 Weekly maintenance log update [$(date +'%Y-%m-%d %H:%M')]"
+          git commit -m "🕒 Weekly maintenance log update [$(date +'%Y-%m-%d %H:%M')]" || echo "No changes to commit"
           git push
