@@ -1,5 +1,6 @@
 name: Build and Deploy to AWS
 #Please chal jao bhai
+# ab chal jaana please 2
 on:
   push:
     branches:
@@ -36,4 +37,5 @@ jobs:
 
       - name: Sync files to S3
         run: aws s3 sync . s3://${{ secrets.AWS_S3_BUCKET }} --delete
+
 
