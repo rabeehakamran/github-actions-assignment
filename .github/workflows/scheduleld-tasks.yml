@@ -46,6 +46,6 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add logs backups || true
+          git add --force logs/* backups/* || true
           git commit -m "Weekly maintenance automation $(date)" || echo "No changes to commit"
           git push || echo "No changes to push"
